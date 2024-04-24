@@ -1,0 +1,50 @@
+---
+name: New Commit
+
+on:
+  schedule:
+    - cron: '0 0 * * 1-6'
+  workflow_dispatch:
+
+permissions: { }
+
+jobs:
+  make-contribution:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          # Checkout with full commit history
+          fetch-depth: 0
+      - name: Github delegates tasks
+        run: |
+          echo "- $(date)" >> ../time.md
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: "Glenn Weber"
+          author_email: "g.pinas68@gmail.com"
+          message: "Github action"
+          # Set the files to commit - replace this with your own file paths
+          add: "time.md"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: automated-frog
+          # Set the Git credentials - replace this with your own secrets
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          title: "Github action"
+          commit-message: "Github action"
+          branch: automated-frog
+          base: main
+          # Set the pull request body - replace this with your own content
+          body: "This pull request was created automatically by a frog."
+          # Set the Git credentials - replace this with your own secrets
+          token: ${{ secrets.GITHUB_TOKEN }}
+...
